@@ -278,14 +278,49 @@ body {
 
 .property-card__actions {
   display: flex;
-  gap: 0.35rem;
+  gap: 0.25rem;
   align-items: center;
+  flex-shrink: 0;
+}
+
+.property-card__action-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.property-card__action-btn:hover {
+  background: var(--bg);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.property-card__action-btn:active {
+  transform: translateY(0);
 }
 
 .property-card__title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   line-height: 1.3;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  flex: 1;
+  min-height: 2.6rem;
+  max-height: 2.6rem;
 }
 
 .property-card__zona {
@@ -361,12 +396,17 @@ body {
   margin-top: 0.5rem;
 }
 
-.property-card--collapsed .property-card__stats,
-.property-card--collapsed .property-card__desc,
-.property-card--collapsed .property-card__meta,
-.property-card--collapsed .property-card__obs,
-.property-card--collapsed .property-card__comments {
+/* Estado colapsado */
+.property-card--collapsed .property-card__extra {
   display: none;
+}
+
+.property-card--collapsed .property-card__main {
+  margin-bottom: 0;
+}
+
+.property-card--collapsed .property-card__status {
+  margin-bottom: 0;
 }
 
 .property-card__footer {
