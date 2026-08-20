@@ -39,7 +39,7 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
             onClick={() => onToggleCollapse(id)}
             title={collapsed ? 'Expandir' : 'Colapsar'}
           >
-            {collapsed ? '\u25bc' : '\u25b2'}
+            {collapsed ? '▼' : '▲'}
           </button>
           <button
             type="button"
@@ -47,7 +47,7 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
             onClick={() => onEdit(property)}
             title="Editar"
           >
-            \u270f\ufe0f
+            ✏️
           </button>
           {link && (
             <a
@@ -57,7 +57,7 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
               className="property-card__action-btn"
               title="Ver en portal"
             >
-              \ud83d\udd17
+              🔗
             </a>
           )}
         </div>
@@ -81,31 +81,31 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
         <div className="property-card__details">
           {area_m2 !== null && area_m2 !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">\ud83d\udcd0</span>
-              <span>{area_m2} m\u00b2</span>
+              <span className="detail-icon">📐</span>
+              <span>{area_m2} m²</span>
             </div>
           )}
           {cuartos !== null && cuartos !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">\ud83d\udecf\ufe0f</span>
+              <span className="detail-icon">🛏️</span>
               <span>{cuartos} cuartos</span>
             </div>
           )}
           {banos !== null && banos !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">\ud83d\udebf</span>
-              <span>{banos} ba\u00f1os</span>
+              <span className="detail-icon">🚿</span>
+              <span>{banos} baños</span>
             </div>
           )}
           {distancia_trabajo_km !== null && distancia_trabajo_km !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">\ud83d\udccd</span>
+              <span className="detail-icon">📍</span>
               <span>{distancia_trabajo_km.toFixed(1)} km</span>
             </div>
           )}
           {anio_construccion !== null && anio_construccion !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">\ud83c\udfd7\ufe0f</span>
+              <span className="detail-icon">🏗️</span>
               <span>{anio_construccion}</span>
             </div>
           )}
