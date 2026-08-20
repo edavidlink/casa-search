@@ -351,6 +351,24 @@ body {
   color: var(--text);
 }
 
+.property-card__comments {
+  background: #fefce8;
+  border-left: 3px solid #fbbf24;
+  border-radius: 0 6px 6px 0;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+
+.property-card--collapsed .property-card__stats,
+.property-card--collapsed .property-card__desc,
+.property-card--collapsed .property-card__meta,
+.property-card--collapsed .property-card__obs,
+.property-card--collapsed .property-card__comments {
+  display: none;
+}
+
 .property-card__footer {
   margin-top: auto;
   padding-top: 0.5rem;

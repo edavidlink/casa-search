@@ -30,10 +30,28 @@ export default function App() {
 
   const [refreshTick, setRefreshTick] = useState(0);
 
+  // Estado para colapsado/expandido por ID
+  const [collapsedCards, setCollapsedCards] = useState(() => {
+    const saved = sessionStorage.getItem('collapsedCards');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const zones = useMemo(
     () => Array.from(new Set(items.map((p) => p.zona).filter(Boolean))).sort(),
     [items]
   );
+
+  // Persistir estado de colapsado
+  useEffect(() => {
+    sessionStorage.setItem('collapsedCards', JSON.stringify(collapsedCards));
+  }, [collapsedCards]);
+
+  const toggleCollapse = (id) => {
+    setCollapsedCards((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -129,6 +147,17 @@ export default function App() {
     }
   };
 
+  const loadCounts = () => {
+    setRefreshTick((t) => t + 1);
+  };
+
+  // Ordenamiento: descartadas al final, resto por criterio seleccionado
+  const sortedItems = useMemo(() => {
+    const nonDiscarded = items.filter((p) => p.status !== 'descartada');
+    const discarded = items.filter((p) => p.status === 'descartada');
+    return [...nonDiscarded, ...discarded];
+  }, [items]);
+
   return (
     <div className="app">
       <header className="app__header">
@@ -187,7 +216,7 @@ export default function App() {
           </div>
         )}
 
-        {loading && items.length === 0 && (
+        {loading && sortedItems.length === 0 && (
           <div className="skeleton-grid">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="skeleton-card" />
@@ -195,7 +224,7 @@ export default function App() {
           </div>
         )}
 
-        {!loading && items.length === 0 && !error && (
+        {!loading && sortedItems.length === 0 && !error && (
           <div className="empty-state">
             <div className="empty-state__icon">🔍</div>
             <h2>Sin resultados</h2>
@@ -206,12 +235,14 @@ export default function App() {
           </div>
         )}
 
-        {items.length > 0 && (
+        {sortedItems.length > 0 && (
           <section className="properties-grid" aria-label="Propiedades">
-            {items.map((property) => (
+            {sortedItems.map((property) => (
               <PropertyCard
                 key={property.id}
                 property={property}
+                collapsed={collapsedCards[property.id]}
+                onToggleCollapse={() => toggleCollapse(property.id)}
                 onEdit={handleEdit}
                 onQuickAction={handleQuickAction}
               />

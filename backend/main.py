@@ -123,7 +123,7 @@ async def get_property(id: int, conn=Depends(get_db)):
 
 @app.patch("/api/properties/{id}")
 async def update_property(id: int, patch: dict[str, Any], conn=Depends(get_db)):
-    allowed_fields = {"status", "observaciones"}
+    allowed_fields = {"status", "observaciones", "comentarios"}
     updates = {k: v for k, v in patch.items() if k in allowed_fields}
 
     if not updates:

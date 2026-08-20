@@ -1,0 +1,27 @@
+# API de búsqueda de casas (backend FastAPI)
+casa-api.169.58.88.103.nip.io {
+    # CORS: solo permitir GitHub Pages
+    @options {
+        method OPTIONS
+    }
+    header @options Access-Control-Allow-Origin "https://edavidlink.github.io"
+    header @options Access-Control-Allow-Methods "GET, PATCH, OPTIONS"
+    header @options Access-Control-Allow-Headers "Content-Type, X-API-Key"
+    header @options Access-Control-Max-Age "86400"
+    respond @options 204
+
+    # Reverse proxy a FastAPI (solo localhost)
+    reverse_proxy 127.0.0.1:8000 {
+        # Timeouts conservadores
+        transport http {
+            dial_timeout 5s
+            response_header_timeout 30s
+        }
+    }
+
+    # Headers de seguridad
+    header X-Content-Type-Options "nosniff"
+    header X-Frame-Options "DENY"
+    header X-XSS-Protection "1; mode=block"
+    header Referrer-Policy "strict-origin-when-cross-origin"
+}

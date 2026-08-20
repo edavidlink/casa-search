@@ -4,6 +4,7 @@ import { STATUS_OPTIONS } from '../constants';
 export default function EditPanel({ property, onSave, onClose, loading, error }) {
   const [status, setStatus] = useState(property?.status || 'pendiente');
   const [observaciones, setObservaciones] = useState(property?.observaciones || '');
+  const [comentarios, setComentarios] = useState(property?.comentarios || '');
 
   useEffect(() => {
     const onKey = (e) => {
@@ -17,7 +18,7 @@ export default function EditPanel({ property, onSave, onClose, loading, error })
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ status, observaciones });
+    onSave({ status, observaciones, comentarios });
   };
 
   return (
@@ -50,6 +51,17 @@ export default function EditPanel({ property, onSave, onClose, loading, error })
               value={observaciones}
               onChange={(e) => setObservaciones(e.target.value)}
               placeholder="Escribe tus notas sobre esta propiedad..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="edit-comentarios">Comentarios</label>
+            <textarea
+              id="edit-comentarios"
+              rows={4}
+              value={comentarios}
+              onChange={(e) => setComentarios(e.target.value)}
+              placeholder="Comentarios adicionales sobre esta propiedad..."
             />
           </div>
 
