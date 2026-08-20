@@ -323,67 +323,83 @@ body {
   max-height: 2.6rem;
 }
 
-.property-card__zona {
+.property-card__status {
   margin: 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
 }
 
-.property-card__stats {
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.property-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.property-card__price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.property-card__details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.6rem;
 }
 
-.stat {
+.detail-item {
   background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.45rem;
   text-align: center;
+  font-size: 0.85rem;
+  color: var(--text);
 }
 
-.stat__label {
+.detail-icon {
   display: block;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.property-card__extra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.extra-section {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6rem;
+}
+
+.extra-label {
   font-size: 0.7rem;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  margin-bottom: 0.3rem;
 }
 
-.stat__value {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 700;
+.extra-value {
   color: var(--text);
-}
-
-.stat__value--price {
-  color: var(--primary);
-}
-
-.property-card__desc {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.property-card__meta {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.property-card__obs {
-  background: #f0f9ff;
-  border-left: 3px solid var(--primary);
-  border-radius: 0 6px 6px 0;
-  padding: 0.6rem;
-  font-size: 0.85rem;
-  color: var(--text);
+  line-height: 1.4;
 }
 
 .property-card__comments {
