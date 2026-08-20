@@ -353,25 +353,28 @@ body {
 }
 
 .property-card__details {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .detail-item {
   background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 0.45rem;
-  text-align: center;
-  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 1 0 auto;
 }
 
 .detail-icon {
-  display: block;
-  font-size: 1rem;
-  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+  line-height: 1;
 }
 
 .property-card__extra {
