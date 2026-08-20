@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { STATUS_MAP } from '../constants';
 
-const PropertyCard = ({ property, onEdit, statusLabels, statusColors, statusIcons, collapsed, onToggleCollapse }) => {
+const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
   const {
+    id,
     titulo,
     zona,
     area_m2,
@@ -24,8 +25,7 @@ const PropertyCard = ({ property, onEdit, statusLabels, statusColors, statusIcon
     }).format(price);
   };
 
-  const getStatusColor = (status) => statusColors[status] || statusColors['pendiente'];
-  const getStatusIcon = (status) => statusIcons[status] || statusIcons['pendiente'];
+  const statusInfo = STATUS_MAP[status] || STATUS_MAP['pendiente'];
 
   return (
     <div className={`property-card ${collapsed ? 'property-card--collapsed' : ''}`}>
@@ -33,29 +33,31 @@ const PropertyCard = ({ property, onEdit, statusLabels, statusColors, statusIcon
       <div className="property-card__header">
         <h3 className="property-card__title" title={titulo}>{titulo}</h3>
         <div className="property-card__actions">
-          <button 
+          <button
+            type="button"
             className="property-card__action-btn"
-            onClick={() => onToggleCollapse(property.id)}
+            onClick={() => onToggleCollapse(id)}
             title={collapsed ? 'Expandir' : 'Colapsar'}
           >
-            {collapsed ? '▼' : '▲'}
+            {collapsed ? '\u25bc' : '\u25b2'}
           </button>
-          <button 
+          <button
+            type="button"
             className="property-card__action-btn"
             onClick={() => onEdit(property)}
             title="Editar"
           >
-            ✏️
+            \u270f\ufe0f
           </button>
           {link && (
-            <a 
-              href={link} 
-              target="_blank" 
+            <a
+              href={link}
+              target="_blank"
               rel="noopener noreferrer"
               className="property-card__action-btn"
               title="Ver en portal"
             >
-              🔗
+              \ud83d\udd17
             </a>
           )}
         </div>
@@ -63,11 +65,11 @@ const PropertyCard = ({ property, onEdit, statusLabels, statusColors, statusIcon
 
       {/* Badge de status */}
       <div className="property-card__status">
-        <span 
-          className="status-badge" 
-          style={{ backgroundColor: getStatusColor(status) }}
+        <span
+          className="status-badge"
+          style={{ backgroundColor: statusInfo.color }}
         >
-          {getStatusIcon(status)} {statusLabels[status]}
+          {statusInfo.icon} {statusInfo.label}
         </span>
       </div>
 
@@ -77,33 +79,33 @@ const PropertyCard = ({ property, onEdit, statusLabels, statusColors, statusIcon
           {formatPrice(precio_canon)}/mes
         </div>
         <div className="property-card__details">
-          {area_m2 && (
+          {area_m2 !== null && area_m2 !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">📐</span>
-              <span>{area_m2} m²</span>
+              <span className="detail-icon">\ud83d\udcd0</span>
+              <span>{area_m2} m\u00b2</span>
             </div>
           )}
-          {cuartos && (
+          {cuartos !== null && cuartos !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">🛏️</span>
+              <span className="detail-icon">\ud83d\udecf\ufe0f</span>
               <span>{cuartos} cuartos</span>
             </div>
           )}
-          {banos && (
+          {banos !== null && banos !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">🚿</span>
-              <span>{banos} baños</span>
+              <span className="detail-icon">\ud83d\udebf</span>
+              <span>{banos} ba\u00f1os</span>
             </div>
           )}
-          {distancia_trabajo_km && (
+          {distancia_trabajo_km !== null && distancia_trabajo_km !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">📍</span>
+              <span className="detail-icon">\ud83d\udccd</span>
               <span>{distancia_trabajo_km.toFixed(1)} km</span>
             </div>
           )}
-          {anio_construccion && (
+          {anio_construccion !== null && anio_construccion !== undefined && (
             <div className="detail-item">
-              <span className="detail-icon">🏗️</span>
+              <span className="detail-icon">\ud83c\udfd7\ufe0f</span>
               <span>{anio_construccion}</span>
             </div>
           )}
@@ -117,14 +119,14 @@ const PropertyCard = ({ property, onEdit, statusLabels, statusColors, statusIcon
             <div className="extra-label">Zona</div>
             <div className="extra-value">{zona}</div>
           </div>
-          
+
           {observaciones && (
             <div className="extra-section">
               <div className="extra-label">Observaciones</div>
               <div className="extra-value">{observaciones}</div>
             </div>
           )}
-          
+
           {comentarios && (
             <div className="extra-section property-card__comments">
               <div className="extra-label">Comentarios</div>
