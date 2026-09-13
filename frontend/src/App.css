@@ -106,14 +106,78 @@ body {
   outline-offset: 1px;
 }
 
-.price-inputs {
+.price-inputs,
+.range-inputs {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.price-inputs input {
+.price-inputs input,
+.range-inputs input,
+.range-inputs select {
   min-width: 0;
+}
+
+.range-inputs span {
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+
+/* Grupo segmentado (tipo de negocio) */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.2rem;
+}
+
+.segmented__btn {
+  flex: 1 1 auto;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segmented__btn:hover {
+  color: var(--text);
+}
+
+.segmented__btn.active {
+  background: var(--surface);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.filter-group--tipo {
+  min-width: 240px;
+  flex: 2 1 240px;
+}
+
+.filter-group--price,
+.filter-group--area {
+  flex: 2 1 200px;
+}
+
+.filter-group--short {
+  min-width: 150px;
+  flex: 1 1 150px;
+}
+
+.filters-bar__row--ranges {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
 }
 
 /* Buttons */
@@ -325,6 +389,33 @@ body {
 
 .property-card__status {
   margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tipo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  background: var(--surface-alt, rgba(148, 163, 184, 0.15));
+  color: var(--text-muted);
+}
+
+.tipo-badge--compra {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.tipo-badge--arriendo {
+  border-color: #8b5cf6;
+  color: #8b5cf6;
 }
 
 .status-badge {

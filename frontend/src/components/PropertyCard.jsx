@@ -1,4 +1,4 @@
-import { STATUS_MAP } from '../constants';
+import { STATUS_MAP, TIPO_NEGOCIO_MAP } from '../constants';
 
 const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
   const {
@@ -6,7 +6,14 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
     titulo,
     zona,
     area_m2,
+    area_min,
+    area_max,
     precio_canon,
+    tipo_negocio,
+    estrato,
+    balcon,
+    parqueadero,
+    parqueadero_num,
     cuartos,
     banos,
     distancia_trabajo_km,
@@ -26,6 +33,31 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
   };
 
   const statusInfo = STATUS_MAP[status] || STATUS_MAP['pendiente'];
+  const tipoInfo = TIPO_NEGOCIO_MAP[tipo_negocio];
+
+  // Rango de area: usa area_min/area_max si el anuncio publica un rango,
+  // si no el area puntual.
+  const areaTexto = (() => {
+    if (area_min != null && area_max != null) return `${area_min} - ${area_max} m²`;
+    if (area_min != null) return `≥ ${area_min} m²`;
+    if (area_max != null) return `≤ ${area_max} m²`;
+    if (area_m2 != null) return `${area_m2} m²`;
+    return null;
+  })();
+
+  // Parqueadero: cantidad numerica si está; si no, el texto libre del anuncio.
+  const parqueaderoTexto =
+    parqueadero_num != null
+      ? parqueadero_num === 0
+        ? 'Sin parqueadero'
+        : `${parqueadero_num} parqueadero${parqueadero_num === 1 ? '' : 's'}`
+      : parqueadero || null;
+
+  // El canon es mensual; el precio de venta no lleva periodo.
+  const precioTexto =
+    precio_canon == null
+      ? 'Precio sin definir'
+      : `${formatPrice(precio_canon)}${tipo_negocio === 'compra' ? '' : '/mes'}`;
 
   return (
     <div className={`property-card ${collapsed ? 'property-card--collapsed' : ''}`}>
@@ -63,7 +95,7 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
         </div>
       </div>
 
-      {/* Badge de status */}
+      {/* Badges de status y tipo de negocio */}
       <div className="property-card__status">
         <span
           className="status-badge"
@@ -71,18 +103,21 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
         >
           {statusInfo.icon} {statusInfo.label}
         </span>
+        {tipoInfo && (
+          <span className={`tipo-badge tipo-badge--${tipoInfo.value}`}>
+            {tipoInfo.icon} {tipoInfo.label}
+          </span>
+        )}
       </div>
 
       {/* Información principal */}
       <div className="property-card__main">
-        <div className="property-card__price">
-          {formatPrice(precio_canon)}/mes
-        </div>
+        <div className="property-card__price">{precioTexto}</div>
         <div className="property-card__details">
-          {area_m2 !== null && area_m2 !== undefined && (
+          {areaTexto && (
             <div className="detail-item">
               <span className="detail-icon">📐</span>
-              <span>{area_m2} m²</span>
+              <span>{areaTexto}</span>
             </div>
           )}
           {cuartos !== null && cuartos !== undefined && (
@@ -95,6 +130,24 @@ const PropertyCard = ({ property, onEdit, collapsed, onToggleCollapse }) => {
             <div className="detail-item">
               <span className="detail-icon">🚿</span>
               <span>{banos} baños</span>
+            </div>
+          )}
+          {balcon !== null && balcon !== undefined && (
+            <div className="detail-item">
+              <span className="detail-icon">🌿</span>
+              <span>{balcon === 0 ? 'Sin balcón' : `${balcon} balcón${balcon === 1 ? '' : 'es'}`}</span>
+            </div>
+          )}
+          {estrato !== null && estrato !== undefined && (
+            <div className="detail-item">
+              <span className="detail-icon">🏘️</span>
+              <span>Estrato {estrato}</span>
+            </div>
+          )}
+          {parqueaderoTexto && (
+            <div className="detail-item">
+              <span className="detail-icon">🅿️</span>
+              <span>{parqueaderoTexto}</span>
             </div>
           )}
           {distancia_trabajo_km !== null && distancia_trabajo_km !== undefined && (

@@ -9,8 +9,17 @@ import './App.css';
 const emptyFilters = {
   status: '',
   zona: '',
+  tipo_negocio: '',
   precio_min: '',
   precio_max: '',
+  area_min: '',
+  area_max: '',
+  balcon_min: '',
+  balcon_max: '',
+  parqueadero_min: '',
+  parqueadero_max: '',
+  estrato_min: '',
+  estrato_max: '',
   q: '',
   ordenar: 'fecha',
 };

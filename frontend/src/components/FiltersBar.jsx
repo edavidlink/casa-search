@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { STATUS_OPTIONS, SORT_OPTIONS } from '../constants';
+import {
+  STATUS_OPTIONS,
+  SORT_OPTIONS,
+  TIPO_NEGOCIO_OPTIONS,
+  BALCON_OPTIONS,
+  PARQUEADERO_OPTIONS,
+  ESTRATO_OPTIONS,
+} from '../constants';
 
 export default function FiltersBar({ filters, zones, counts, onChange, onClear }) {
   const [localText, setLocalText] = useState(filters.q || '');
@@ -24,11 +31,59 @@ export default function FiltersBar({ filters, zones, counts, onChange, onClear }
   };
 
   const hasFilters =
-    filters.status || filters.zona || filters.precio_min || filters.precio_max || filters.q;
+    filters.status ||
+    filters.zona ||
+    filters.tipo_negocio ||
+    filters.precio_min ||
+    filters.precio_max ||
+    filters.area_min ||
+    filters.area_max ||
+    filters.balcon_min ||
+    filters.balcon_max ||
+    filters.parqueadero_min ||
+    filters.parqueadero_max ||
+    filters.estrato_min ||
+    filters.estrato_max ||
+    filters.q;
+
+  // Etiqueta del precio segun el tipo de negocio elegido.
+  const precioLabel =
+    filters.tipo_negocio === 'compra' ? 'Precio de venta (COP)' : 'Precio / canon (COP)';
 
   return (
     <section className="filters-bar" aria-label="Filtros de propiedades">
       <div className="filters-bar__row">
+        <div className="filter-group filter-group--tipo">
+          <label id="filter-tipo-label">Tipo de negocio</label>
+          <div
+            className="segmented"
+            role="group"
+            aria-labelledby="filter-tipo-label"
+          >
+            <button
+              type="button"
+              className={`segmented__btn ${!filters.tipo_negocio ? 'active' : ''}`}
+              onClick={() => handleChange('tipo_negocio', '')}
+              aria-pressed={!filters.tipo_negocio}
+            >
+              Todos
+            </button>
+            {TIPO_NEGOCIO_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`segmented__btn ${
+                  filters.tipo_negocio === opt.value ? 'active' : ''
+                }`}
+                onClick={() => handleChange('tipo_negocio', opt.value)}
+                aria-pressed={filters.tipo_negocio === opt.value}
+              >
+                {opt.icon} {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="filter-group">
           <label htmlFor="filter-status">Estado</label>
           <select
@@ -61,9 +116,26 @@ export default function FiltersBar({ filters, zones, counts, onChange, onClear }
           </select>
         </div>
 
+        <div className="filter-group">
+          <label htmlFor="filter-ordenar">Ordenar</label>
+          <select
+            id="filter-ordenar"
+            value={filters.ordenar || 'fecha'}
+            onChange={(e) => handleChange('ordenar', e.target.value)}
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="filters-bar__row filters-bar__row--ranges">
         <div className="filter-group filter-group--price">
-          <label>Precio (COP)</label>
-          <div className="price-inputs">
+          <label>{precioLabel}</label>
+          <div className="range-inputs">
             <input
               type="number"
               placeholder="Mín"
@@ -80,19 +152,123 @@ export default function FiltersBar({ filters, zones, counts, onChange, onClear }
           </div>
         </div>
 
-        <div className="filter-group">
-          <label htmlFor="filter-ordenar">Ordenar</label>
-          <select
-            id="filter-ordenar"
-            value={filters.ordenar || 'fecha'}
-            onChange={(e) => handleChange('ordenar', e.target.value)}
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+        <div className="filter-group filter-group--area">
+          <label>Área (m²)</label>
+          <div className="range-inputs">
+            <input
+              type="number"
+              placeholder="Mín"
+              min="0"
+              step="1"
+              value={filters.area_min || ''}
+              onChange={(e) => handleChange('area_min', e.target.value)}
+            />
+            <span>—</span>
+            <input
+              type="number"
+              placeholder="Máx"
+              min="0"
+              step="1"
+              value={filters.area_max || ''}
+              onChange={(e) => handleChange('area_max', e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="filter-group filter-group--short">
+          <label htmlFor="filter-balcon-min">Balcones</label>
+          <div className="range-inputs">
+            <select
+              id="filter-balcon-min"
+              aria-label="Balcones desde"
+              value={filters.balcon_min ?? ''}
+              onChange={(e) => handleChange('balcon_min', e.target.value)}
+            >
+              <option value="">Desde</option>
+              {BALCON_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            <span>—</span>
+            <select
+              aria-label="Balcones hasta"
+              value={filters.balcon_max ?? ''}
+              onChange={(e) => handleChange('balcon_max', e.target.value)}
+            >
+              <option value="">Hasta</option>
+              {BALCON_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="filter-group filter-group--short">
+          <label htmlFor="filter-estrato-min">Estrato</label>
+          <div className="range-inputs">
+            <select
+              id="filter-estrato-min"
+              aria-label="Estrato desde"
+              value={filters.estrato_min ?? ''}
+              onChange={(e) => handleChange('estrato_min', e.target.value)}
+            >
+              <option value="">Desde</option>
+              {ESTRATO_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            <span>—</span>
+            <select
+              aria-label="Estrato hasta"
+              value={filters.estrato_max ?? ''}
+              onChange={(e) => handleChange('estrato_max', e.target.value)}
+            >
+              <option value="">Hasta</option>
+              {ESTRATO_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="filter-group filter-group--short">
+          <label htmlFor="filter-parqueadero-min">Parqueaderos</label>
+          <div className="range-inputs">
+            <select
+              id="filter-parqueadero-min"
+              aria-label="Parqueaderos desde"
+              value={filters.parqueadero_min ?? ''}
+              onChange={(e) => handleChange('parqueadero_min', e.target.value)}
+            >
+              <option value="">Desde</option>
+              {PARQUEADERO_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            <span>—</span>
+            <select
+              aria-label="Parqueaderos hasta"
+              value={filters.parqueadero_max ?? ''}
+              onChange={(e) => handleChange('parqueadero_max', e.target.value)}
+            >
+              <option value="">Hasta</option>
+              {PARQUEADERO_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

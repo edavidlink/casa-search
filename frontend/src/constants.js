@@ -17,5 +17,27 @@ export const SORT_OPTIONS = [
   { value: 'fecha', label: 'Más recientes' },
   { value: 'precio', label: 'Precio: menor a mayor' },
   { value: '-precio', label: 'Precio: mayor a menor' },
+  { value: 'area', label: 'Área: menor a mayor' },
+  { value: '-area', label: 'Área: mayor a menor' },
   { value: 'distancia', label: 'Distancia: más cerca' },
 ];
+
+// --- Filtros de búsqueda -------------------------------------------------
+
+export const TIPO_NEGOCIO_OPTIONS = [
+  { value: 'compra', label: 'Compra', icon: '🏷️' },
+  { value: 'arriendo', label: 'Arriendo', icon: '🔑' },
+];
+
+export const TIPO_NEGOCIO_MAP = Object.fromEntries(
+  TIPO_NEGOCIO_OPTIONS.map((t) => [t.value, t])
+);
+
+// Cantidad de balcones (0 = sin balcón).
+export const BALCON_OPTIONS = [0, 1, 2, 3, 4];
+
+// Cantidad de parqueaderos (0 = sin parqueadero).
+export const PARQUEADERO_OPTIONS = [0, 1, 2, 3, 4];
+
+// Estrato socioeconómico.
+export const ESTRATO_OPTIONS = [1, 2, 3, 4, 5, 6];
