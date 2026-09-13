@@ -86,7 +86,7 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    listProperties({ limite: 1000 })
+    listProperties({ limite: 200 })
       .then(({ items: allItems, total: allTotal }) => {
         if (cancelled) return;
         const counts = { total: allTotal };
