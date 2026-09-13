@@ -39,7 +39,7 @@ app.add_middleware(
         "http://127.0.0.1:4173",
     ],
     allow_credentials=True,
-    allow_methods=["GET", "PATCH", "OPTIONS"],
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
 
@@ -53,7 +53,7 @@ async def health(conn=Depends(get_db)):
         "ok": True,
         "db": DB_PATH,
         "registros": total,
-        "version": "1.2.0",
+        "version": "1.3.0",
     }
 
 
@@ -190,6 +190,152 @@ async def list_properties(
     items = [row_to_dict(row) for row in cur.fetchall()]
 
     return {"items": items, "total": total}
+
+
+# Campos aceptados al crear una propiedad.
+CREATABLE_FIELDS = {
+    "titulo",
+    "zona",
+    "area_m2",
+    "area_min",
+    "area_max",
+    "precio_canon",
+    "descripcion",
+    "acabados",
+    "parqueadero",
+    "parqueadero_num",
+    "link",
+    "portal",
+    "fecha_publicacion",
+    "contacto",
+    "distancia_trabajo_km",
+    "anio_construccion",
+    "cuartos",
+    "banos",
+    "zona_ropas",
+    "comentarios",
+    "observaciones",
+    "tipo_negocio",
+    "balcon",
+    "estrato",
+    "status",
+}
+
+# Rangos validos (min, max) para campos numericos enteros.
+RANGOS_ENTEROS = {
+    "estrato": (1, 6),
+    "balcon": (0, 10),
+    "parqueadero_num": (0, 10),
+    "cuartos": (0, 30),
+    "banos": (0, 30),
+    "anio_construccion": (1800, 2200),
+}
+
+
+def _validar_numeros(datos: dict[str, Any]) -> None:
+    for campo, (minimo, maximo) in RANGOS_ENTEROS.items():
+        valor = datos.get(campo)
+        if valor is None:
+            continue
+        if isinstance(valor, bool) or not isinstance(valor, (int, float)):
+            raise HTTPException(
+                status_code=422,
+                detail=f"'{campo}' debe ser numerico",
+            )
+        if valor < minimo or valor > maximo:
+            raise HTTPException(
+                status_code=422,
+                detail=f"'{campo}' debe estar entre {minimo} y {maximo}",
+            )
+    for campo in ("area_m2", "area_min", "area_max", "precio_canon"):
+        valor = datos.get(campo)
+        if valor is None:
+            continue
+        if isinstance(valor, bool) or not isinstance(valor, (int, float)):
+            raise HTTPException(
+                status_code=422,
+                detail=f"'{campo}' debe ser numerico",
+            )
+        if valor < 0:
+            raise HTTPException(
+                status_code=422,
+                detail=f"'{campo}' no puede ser negativo",
+            )
+
+
+@app.post("/api/properties", status_code=201)
+async def create_property(payload: dict[str, Any], conn=Depends(get_db)):
+    """Crea una propiedad en la tabla casa_opciones.
+
+    - Solo se aceptan los campos de CREATABLE_FIELDS (el resto se ignora).
+    - 'status' por defecto es 'pendiente'.
+    - Si se envia 'link' y ya existe una propiedad con ese link, responde 409
+      para evitar duplicados en cargas repetidas.
+    """
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=422, detail="Se espera un objeto JSON")
+
+    datos = {
+        k: v
+        for k, v in payload.items()
+        if k in CREATABLE_FIELDS and v is not None and v != ""
+    }
+
+    if not datos:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "No hay campos validos. Permitidos: "
+                + ", ".join(sorted(CREATABLE_FIELDS))
+            ),
+        )
+
+    datos.setdefault("status", "pendiente")
+
+    if datos["status"] not in ALLOWED_STATUS:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Status inválido. Permitidos: {', '.join(sorted(ALLOWED_STATUS))}",
+        )
+
+    tipo_negocio = datos.get("tipo_negocio")
+    if tipo_negocio is not None and tipo_negocio not in ALLOWED_TIPO_NEGOCIO:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "tipo_negocio inválido. Permitidos: "
+                + ", ".join(sorted(ALLOWED_TIPO_NEGOCIO))
+            ),
+        )
+
+    _validar_numeros(datos)
+
+    link = datos.get("link")
+    if link:
+        cur = conn.execute(
+            "SELECT id FROM casa_opciones WHERE link = ?", (link,)
+        )
+        existente = cur.fetchone()
+        if existente:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "Ya existe una propiedad con ese link "
+                    f"(id={existente['id']})"
+                ),
+            )
+
+    columnas = ", ".join(datos.keys())
+    marcadores = ", ".join("?" for _ in datos)
+    conn.execute(
+        f"INSERT INTO casa_opciones ({columnas}) VALUES ({marcadores})",
+        list(datos.values()),
+    )
+    conn.commit()
+
+    nuevo_id = conn.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
+    cur = conn.execute("SELECT * FROM casa_opciones WHERE id = ?", (nuevo_id,))
+    return row_to_dict(cur.fetchone())
 
 
 @app.get("/api/properties/{id}")
