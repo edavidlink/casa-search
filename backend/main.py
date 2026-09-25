@@ -86,7 +86,7 @@ async def list_properties(
         Literal["precio", "-precio", "area", "-area", "fecha", "distancia"],
         Query(),
     ] = "fecha",
-    limite: Annotated[int, Query(ge=1, le=200)] = 100,
+    limite: Annotated[int, Query(ge=1, le=1000)] = 500,
     offset: Annotated[int, Query(ge=0)] = 0,
     conn=Depends(get_db),
 ):

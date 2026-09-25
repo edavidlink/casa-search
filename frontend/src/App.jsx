@@ -6,6 +6,8 @@ import PropertyCard from './components/PropertyCard';
 import PropertyListItem from './components/PropertyListItem';
 import EditPanel from './components/EditPanel';
 import './App.css';
+const ITEMS_PER_PAGE = 30;
+
 
 const emptyFilters = {
   status: '',
@@ -39,6 +41,9 @@ export default function App() {
   const [toast, setToast] = useState(null);
 
   const [refreshTick, setRefreshTick] = useState(0);
+
+  // Paginación
+  const [page, setPage] = useState(1);
 
   // Ocultar descartadas (on por defecto)
   const [hideDescartadas, setHideDescartadas] = useState(() => {
@@ -86,7 +91,7 @@ export default function App() {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    listProperties({ ...filters, limite: 200 })
+    listProperties({ ...filters, limite: 1000 })
       .then((data) => {
         if (cancelled) return;
         setItems(data.items || []);
@@ -106,7 +111,7 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    listProperties({ limite: 200 })
+    listProperties({ limite: 1000 })
       .then(({ items: allItems, total: allTotal }) => {
         if (cancelled) return;
         const counts = { total: allTotal };
@@ -189,6 +194,12 @@ export default function App() {
     const discarded = items.filter((p) => p.status === 'descartada');
     return [...nonDiscarded, ...discarded];
   }, [items, hideDescartadas]);
+
+  // Reset page when filters or data change
+  useEffect(() => { setPage(1); }, [filters, hideDescartadas, refreshTick]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedItems.length / ITEMS_PER_PAGE));
+  const pagedItems = sortedItems.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
     <div className="app">
@@ -293,9 +304,9 @@ export default function App() {
           </div>
         )}
 
-        {sortedItems.length > 0 && viewMode === 'cards' && (
+        {pagedItems.length > 0 && viewMode === 'cards' && (
           <section className="properties-grid" aria-label="Propiedades">
-            {sortedItems.map((property) => (
+            {pagedItems.map((property) => (
               <PropertyCard
                 key={property.id}
                 property={property}
@@ -308,9 +319,9 @@ export default function App() {
           </section>
         )}
 
-        {sortedItems.length > 0 && viewMode === 'list' && (
+        {pagedItems.length > 0 && viewMode === 'list' && (
           <section className="properties-list" aria-label="Propiedades (lista)">
-            {sortedItems.map((property) => (
+            {pagedItems.map((property) => (
               <PropertyListItem
                 key={property.id}
                 property={property}
@@ -318,6 +329,46 @@ export default function App() {
               />
             ))}
           </section>
+        )}
+
+        {sortedItems.length > ITEMS_PER_PAGE && (
+          <div className="pagination">
+            <button
+              type="button"
+              className="btn btn--secondary"
+              disabled={page <= 1}
+              onClick={() => setPage(1)}
+            >
+              ⏮
+            </button>
+            <button
+              type="button"
+              className="btn btn--secondary"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              ◀
+            </button>
+            <span className="pagination__info">
+              Página {page} de {totalPages} ({sortedItems.length} propiedades)
+            </span>
+            <button
+              type="button"
+              className="btn btn--secondary"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              ▶
+            </button>
+            <button
+              type="button"
+              className="btn btn--secondary"
+              disabled={page >= totalPages}
+              onClick={() => setPage(totalPages)}
+            >
+              ⏭
+            </button>
+          </div>
         )}
       </main>
 
