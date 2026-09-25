@@ -64,10 +64,10 @@ async def list_properties(
     tipo_negocio: Annotated[Literal["compra", "arriendo"] | None, Query()] = None,
     precio_min: Annotated[float | None, Query()] = None,
     precio_max: Annotated[float | None, Query()] = None,
-    # Balcon: "balcon" es atajo de valor exacto; balcon_min/balcon_max rango.
-    balcon: Annotated[int | None, Query(ge=0, le=10)] = None,
-    balcon_min: Annotated[int | None, Query(ge=0, le=10)] = None,
-    balcon_max: Annotated[int | None, Query(ge=0, le=10)] = None,
+    # Habitaciones: "cuartos" es atajo de valor exacto; cuartos_min/cuartos_max rango.
+    cuartos: Annotated[int | None, Query(ge=0, le=10)] = None,
+    cuartos_min: Annotated[int | None, Query(ge=0, le=10)] = None,
+    cuartos_max: Annotated[int | None, Query(ge=0, le=10)] = None,
     # Estrato: "estrato" es atajo de valor exacto; estrato_min/max rango.
     estrato: Annotated[int | None, Query(ge=1, le=6)] = None,
     estrato_min: Annotated[int | None, Query(ge=1, le=6)] = None,
@@ -109,15 +109,15 @@ async def list_properties(
         where.append("precio_canon <= ?")
         params.append(precio_max)
 
-    # Balcon: exacto si viene "balcon", si no el rango pedido.
-    balcon_desde = balcon if balcon is not None else balcon_min
-    balcon_hasta = balcon if balcon is not None else balcon_max
-    if balcon_desde is not None:
-        where.append("balcon >= ?")
-        params.append(balcon_desde)
-    if balcon_hasta is not None:
-        where.append("balcon <= ?")
-        params.append(balcon_hasta)
+    # Habitaciones: exacto si viene "cuartos", si no el rango pedido.
+    cuartos_desde = cuartos if cuartos is not None else cuartos_min
+    cuartos_hasta = cuartos if cuartos is not None else cuartos_max
+    if cuartos_desde is not None:
+        where.append("cuartos >= ?")
+        params.append(cuartos_desde)
+    if cuartos_hasta is not None:
+        where.append("cuartos <= ?")
+        params.append(cuartos_hasta)
 
     estrato_desde = estrato if estrato is not None else estrato_min
     estrato_hasta = estrato if estrato is not None else estrato_max

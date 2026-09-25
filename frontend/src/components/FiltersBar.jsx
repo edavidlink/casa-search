@@ -38,8 +38,8 @@ export default function FiltersBar({ filters, zones, counts, onChange, onClear }
     filters.precio_max ||
     filters.area_min ||
     filters.area_max ||
-    filters.balcon_min ||
-    filters.balcon_max ||
+    filters.cuartos_min ||
+    filters.cuartos_max ||
     filters.parqueadero_min ||
     filters.parqueadero_max ||
     filters.estrato_min ||
@@ -176,16 +176,16 @@ export default function FiltersBar({ filters, zones, counts, onChange, onClear }
         </div>
 
         <div className="filter-group filter-group--short">
-          <label htmlFor="filter-balcon-min">Balcones</label>
+          <label htmlFor="filter-cuartos-min">Habitaciones</label>
           <div className="range-inputs">
             <select
-              id="filter-balcon-min"
-              aria-label="Balcones desde"
-              value={filters.balcon_min ?? ''}
-              onChange={(e) => handleChange('balcon_min', e.target.value)}
+              id="filter-cuartos-min"
+              aria-label="Habitaciones desde"
+              value={filters.cuartos_min ?? ''}
+              onChange={(e) => handleChange('cuartos_min', e.target.value)}
             >
               <option value="">Desde</option>
-              {BALCON_OPTIONS.map((n) => (
+              {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>
@@ -193,12 +193,12 @@ export default function FiltersBar({ filters, zones, counts, onChange, onClear }
             </select>
             <span>—</span>
             <select
-              aria-label="Balcones hasta"
-              value={filters.balcon_max ?? ''}
-              onChange={(e) => handleChange('balcon_max', e.target.value)}
+              aria-label="Habitaciones hasta"
+              value={filters.cuartos_max ?? ''}
+              onChange={(e) => handleChange('cuartos_max', e.target.value)}
             >
               <option value="">Hasta</option>
-              {BALCON_OPTIONS.map((n) => (
+              {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>
