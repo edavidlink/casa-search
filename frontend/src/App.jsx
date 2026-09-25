@@ -3,6 +3,7 @@ import { listProperties, updateProperty } from './api';
 import { STATUS_MAP } from './constants';
 import FiltersBar from './components/FiltersBar';
 import PropertyCard from './components/PropertyCard';
+import PropertyListItem from './components/PropertyListItem';
 import EditPanel from './components/EditPanel';
 import './App.css';
 
@@ -39,6 +40,17 @@ export default function App() {
 
   const [refreshTick, setRefreshTick] = useState(0);
 
+  // Ocultar descartadas (on por defecto)
+  const [hideDescartadas, setHideDescartadas] = useState(() => {
+    const saved = sessionStorage.getItem('hideDescartadas');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  // Modo de vista: 'cards' | 'list'
+  const [viewMode, setViewMode] = useState(() => {
+    return sessionStorage.getItem('viewMode') || 'cards';
+  });
+
   // Estado para colapsado/expandido por ID
   const [collapsedCards, setCollapsedCards] = useState(() => {
     const saved = sessionStorage.getItem('collapsedCards');
@@ -54,6 +66,14 @@ export default function App() {
   useEffect(() => {
     sessionStorage.setItem('collapsedCards', JSON.stringify(collapsedCards));
   }, [collapsedCards]);
+
+  useEffect(() => {
+    sessionStorage.setItem('hideDescartadas', JSON.stringify(hideDescartadas));
+  }, [hideDescartadas]);
+
+  useEffect(() => {
+    sessionStorage.setItem('viewMode', viewMode);
+  }, [viewMode]);
 
   const toggleCollapse = (id) => {
     setCollapsedCards((prev) => ({
@@ -162,10 +182,13 @@ export default function App() {
 
   // Ordenamiento: descartadas al final, resto por criterio seleccionado
   const sortedItems = useMemo(() => {
+    if (hideDescartadas) {
+      return items.filter((p) => p.status !== 'descartada');
+    }
     const nonDiscarded = items.filter((p) => p.status !== 'descartada');
     const discarded = items.filter((p) => p.status === 'descartada');
     return [...nonDiscarded, ...discarded];
-  }, [items]);
+  }, [items, hideDescartadas]);
 
   return (
     <div className="app">
@@ -221,7 +244,33 @@ export default function App() {
               >
                 Todas ({counts.total || 0})
               </button>
-            </div>
+              <button
+                type="button"
+                className={`quick-filter ${hideDescartadas ? 'active' : ''}`}
+                onClick={() => setHideDescartadas((v) => !v)}
+                title={hideDescartadas ? 'Mostrar descartadas' : 'Ocultar descartadas'}
+              >
+                {hideDescartadas ? '🙈' : '👁️'} Descartadas
+              </button>
+              <div className="view-toggle">
+                <button
+                  type="button"
+                  className={`view-toggle__btn ${viewMode === 'cards' ? 'active' : ''}`}
+                  onClick={() => setViewMode('cards')}
+                  title="Vista tarjetas"
+                >
+                  ▦
+                </button>
+                <button
+                  type="button"
+                  className={`view-toggle__btn ${viewMode === 'list' ? 'active' : ''}`}
+                  onClick={() => setViewMode('list')}
+                  title="Vista lista"
+                >
+                  ☰
+                </button>
+              </div>
+              </div>
           </div>
         )}
 
@@ -244,7 +293,7 @@ export default function App() {
           </div>
         )}
 
-        {sortedItems.length > 0 && (
+        {sortedItems.length > 0 && viewMode === 'cards' && (
           <section className="properties-grid" aria-label="Propiedades">
             {sortedItems.map((property) => (
               <PropertyCard
@@ -254,6 +303,18 @@ export default function App() {
                 onToggleCollapse={() => toggleCollapse(property.id)}
                 onEdit={handleEdit}
                 onQuickAction={handleQuickAction}
+              />
+            ))}
+          </section>
+        )}
+
+        {sortedItems.length > 0 && viewMode === 'list' && (
+          <section className="properties-list" aria-label="Propiedades (lista)">
+            {sortedItems.map((property) => (
+              <PropertyListItem
+                key={property.id}
+                property={property}
+                onEdit={handleEdit}
               />
             ))}
           </section>
